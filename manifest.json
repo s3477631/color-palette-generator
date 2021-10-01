@@ -1,0 +1,10 @@
+{
+  "name": "Color Palette Generator",
+  "id": "1025288199954067982",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": [
+    "figma"
+  ],
+  "ui": "ui.html"
+}

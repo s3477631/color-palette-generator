@@ -1,0 +1,14 @@
+{
+  "name": "Angular-Material-UI-builder",
+  "version": "1.0.0",
+  "description": "Your Figma plugin",
+  "main": "code.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": "",
+  "license": "",
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.36.0"
+  }
+}

@@ -1,0 +1,13 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# CodeStream ignored files
+/codestream.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+/node/
+node_tmp/
+node_modules/
+npm-debug.log.*
+/.awcache/*
+package-lock.json

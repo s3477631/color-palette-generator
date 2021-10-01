@@ -1,0 +1,195 @@
+<h2>Color Palette Maker</h2>
+<div class="generate-button-container">
+    <input placeholder="Name Palette" class="palette-name" type="text" value=""/>
+    <div class="spacer"></div>
+    <div style="display: flex; flex-direction: column;">
+        <div class="notification notification-hide">Copied!</div>
+        <button class="copy-button">
+            <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 0 24 24" width="18px" fill="#000000">
+                <path d="M0 0h24v24H0V0z" fill="none"/>
+                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+        </button>
+    </div>
+
+
+    <button class="clear-button">Clear</button>
+    <button class="generate-button">Generate</button>
+</div>
+
+
+<span>Code:</span>
+<div class="code-output">
+</div>
+
+<span>preview:  </span>
+<div class="stylesheet-container">
+</div>
+
+<script>
+    const generateButton = document.querySelector('.generate-button');
+    const colorPaletteContainer = document.querySelector('.stylesheet-container');
+    const clearSheet = document.querySelector('.clear-button');
+    const paletteName = document.querySelector('.palette-name');
+    const codeOutput = document.querySelector('.code-output');
+    const copyButton = document.querySelector('.copy-button');
+    const notification = document.querySelector('.notification');
+
+
+    const updateInput = (event) => {
+        paletteName.value = event.target.value
+    }
+
+    const generateSheet = () => {
+        const colorElements = colorPaletteContainer.children
+        const colors = {};
+        const palette = {};
+        let i = 0;
+        for (let item of colorElements) {
+            if (i == 0) {
+                i = 50
+                colors[i] = item.value
+                i = 100
+            } else {
+                colors[i] = item.value
+                i += 100;
+            }
+        }
+        ;
+        if (paletteName.value == "") {
+            palette['defaultTheme'] = colors;
+        } else {
+            palette[paletteName.value] = colors;
+        }
+        parent.postMessage({pluginMessage: JSON.stringify(palette)}, '*')
+    }
+    const clearSelected = () => {
+        while (colorPaletteContainer.lastElementChild) {
+            colorPaletteContainer.removeChild(colorPaletteContainer.lastElementChild);
+        }
+        codeOutput.innerHTML = "";
+        paletteName.value = "";
+    }
+
+    const copyCode = () => {
+        let sel = document.getSelection();
+        let range = document.createRange(); //range object
+        range.selectNodeContents(codeOutput); //sets Range
+        sel.removeAllRanges(); //remove all ranges from selection
+        sel.addRange(range);//add Range to a Selection.
+        document.execCommand("copy")
+        notification.classList.toggle('copied-notification')
+        setTimeout(() => {
+            notification.classList.toggle('copied-notification')
+        }, 1500)
+    }
+
+    const addCode = (message) => {
+        let textNode = document.createTextNode(message.toString());
+        textNode.className = 'codeColor'
+        codeOutput.appendChild(textNode)
+    }
+
+    const addColorPickers = (message) => {
+        const colorPicker = document.createElement('input');
+        colorPicker.type = 'color';
+        colorPicker.className = 'color-picker'
+        colorPicker.value = message;
+        colorPaletteContainer.appendChild(colorPicker);
+    }
+
+    const filterMessage = (event) => {
+        const message = JSON.parse(event.data.pluginMessage)
+        if (Object.keys(message).toString() == "color") {
+            addColorPickers(Object.values(message));
+        } else {
+            addCode(Object.values(message))
+        }
+    }
+
+    window.onmessage = async (event) => {
+        filterMessage(event)
+    }
+
+    copyButton.addEventListener("click", copyCode, false)
+    paletteName.addEventListener("change", updateInput, false)
+    clearSheet.addEventListener("click", clearSelected, false)
+    generateButton.addEventListener("click", generateSheet, false)
+
+</script>
+<style>
+    .notification-hide {
+        display: none;
+    }
+
+    .copied-notification {
+        display: inline-flex !important;
+        position: absolute;
+        top: 0;
+        right: 10px;
+        color: #17ce52;
+    }
+
+    .color-picker {
+        width: 100%;
+        margin-top: 4px;
+        border: none;
+        -webkit-appearance: none;
+        min-height: 30px;
+    }
+
+    .code-output {
+        width: 100%;
+        height: 50px;
+        background: #E5E5E5;
+    }
+
+    input[type="color"]::-webkit-color-swatch-wrapper {
+        padding: 0;
+    }
+
+    input[type="color"]::-webkit-color-swatch {
+        border: none;
+    }
+
+    .color-picker-label {
+        color: black;
+        font-size: 18px;
+    }
+
+    .generate-button-container {
+        display: flex;
+        width: 100%;
+        justify-content: space-around;
+        margin-top: 4px;
+        margin-bottom: 12px;
+    }
+
+    .spacer {
+        width: 20px;
+    }
+
+    button:hover {
+        cursor: pointer;
+    }
+
+    .copy-button {
+        background: #E5E5E5;
+    }
+
+    button {
+        border: none;
+        background: #4483d9;
+        color: #fdf7f7;
+        border-radius: 8px;
+        height: 30px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+
+    .clear-button {
+        background: #ea4444;
+    }
+
+
+</style>
