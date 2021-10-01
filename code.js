@@ -19,28 +19,28 @@ const generateCode = (paletteName, palette) => {
  )
  `;
 };
-figma.ui.onmessage = (message) => {
-    const rawObject = JSON.parse(message);
-    const paletteName = Object.keys(rawObject).toString();
-    const colorValues = Object.entries(rawObject);
-    const palette = colorValues[0][1];
-    figma.ui.postMessage(JSON.stringify({ code: `${generateCode(paletteName, palette)}` }));
-};
 // sorry for any
 const loopingFunction = (selection, selectionType) => {
     return selection.reduce((acc, curr) => {
         if (curr.type == selectionType) {
             return loopingFunction(curr.children, selectionType);
         }
+        // the could be a text node... sure why not?
         if (curr.type == 'VECTOR') {
             const name = (curr.name).split('/')[0];
             const objWithName = Object.assign({ name: name }, ...curr.fills);
             const objWithWeight = Object.assign({ weight: (curr.name).split('/')[1] }, objWithName);
-            //        console.log(curr.fills);
             acc.push(objWithWeight);
         }
         return acc;
     }, []);
+};
+figma.ui.onmessage = (message) => {
+    const rawObject = JSON.parse(message);
+    const paletteName = Object.keys(rawObject).toString();
+    const colorValues = Object.entries(rawObject);
+    const palette = colorValues[0][1];
+    figma.ui.postMessage(JSON.stringify({ code: `${generateCode(paletteName, palette)}` }));
 };
 figma.on('selectionchange', () => {
     const selectedChildren = loopingFunction(figma.currentPage.selection, 'GROUP');
